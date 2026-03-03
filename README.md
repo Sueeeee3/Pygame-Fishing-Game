@@ -1,2 +1,3 @@
 # Open-source-pygame-Fishing-Game
-Sooo this is a project made in a week (The exe version, the web port took longer) in pygame and without using generative ai!
+## An Open Source Pygame Project made in a week with web port
+#Can be used to learn how to make a game With added comments!
