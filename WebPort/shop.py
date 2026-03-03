@@ -25,7 +25,7 @@ class Shop:
         self.rod_cosmetic = {1: "default", 2: "default", 3: "default"}
         self.pending_earn = []
 
-        base_prices = {1: 0, 2: 150, 3: 1500}
+        base_prices = {1: 0, 2: 150, 3: 900}
         rod_descs = {
             (1, "default"): "Rusty, held together by duct tape, prayers and a dream.",
             (1, "black"):   "Same rusty rod, now including existential crisis.",
@@ -58,13 +58,13 @@ class Shop:
         self.inventory_items = [
             {"name": "Cardboard Box", "tier": 1, "price": 0,   "desc": "How is this still holding on?!",                                          "owned": True},
             {"name": "Bucket",        "tier": 2, "price": 75,  "desc": "Generational classic, may include a hole in the bottom.",                 "owned": False},
-            {"name": "Fridge",        "tier": 3, "price": 550, "desc": "Cools the fish down so they aren't that angry about being sold.",         "owned": False},
+            {"name": "Fridge",        "tier": 3, "price": 350, "desc": "Cools the fish down so they aren't that angry about being sold.",         "owned": False},
         ]
 
         self.upgrade_items = [
             {"name": "Bread Bait",        "price": 0,   "desc": "Well, someone is eating a worse sandwich now.",                                                    "owned": True,  "req_tier": 1, "flag": None},
-            {"name": "Worm Bait",         "price": 200, "desc": "Wiggly, irresistible and too cute for its own, doesn't attract normal Fish.",                      "owned": False, "req_tier": 2, "flag": "tier2"},
-            {"name": "Professional Bait", "price": 400, "desc": "If fish had legs they would be coming out of the woodwork. Only attracts the most exclusive Fish.", "owned": False, "req_tier": 3, "flag": "tier3"},
+            {"name": "Worm Bait",         "price": 120, "desc": "Wiggly, irresistible and too cute for its own, doesn't attract normal Fish.",                      "owned": False, "req_tier": 2, "flag": "tier2"},
+            {"name": "Professional Bait", "price": 300, "desc": "If fish had legs they would be coming out of the woodwork. Only attracts the most exclusive Fish.", "owned": False, "req_tier": 3, "flag": "tier3"},
         ]
 
     def _max_unlocked_tier(self):
@@ -339,4 +339,5 @@ class Shop:
                     inv["owned"] = True
                     game.inventory.tier = inv["tier"]
             else:
+
                 self._inactive_button(screen, assets, text_x, btn_y, bw, bh, "Not enough gold", 24)
