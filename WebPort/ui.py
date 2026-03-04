@@ -11,16 +11,16 @@ class UI:
         self.game   = game
         self._mouse_clicked  = False
         self._slider_rects   = []
-        self._focus_cooldown = 0
+        self._focus_cooldown = 0 #Frames remaining where clicks are ignored after focus gain
 
     def update_mouse_state(self):
-        self._mouse_clicked = False #Reset each frame
+        self._mouse_clicked = False #Reset each frame so clicks are only registered once
         self._slider_rects   = []
         if self._focus_cooldown > 0: #Tick down the cooldown
             self._focus_cooldown -= 1
 
-    def register_click(self): #Call this from game.handle_events() when mousebutton clicked /adding to game
-        if self._focus_cooldown > 0:  #Ignore clicks during cooldown so no hovering issues
+    def register_click(self): #Call this from game.handle_events() in Game()
+        if self._focus_cooldown > 0:  #Ignore clicks during cooldown so buttons can ignore phantom clicks
             return
         self._mouse_clicked = True
 
@@ -81,5 +81,6 @@ class UI:
 
         if click and hit_rect.collidepoint(mouse_pos):
             value = max(min_value, min(max_value, min_value + (mouse_pos[0] - x) / width * (max_value - min_value)))
+
 
         return value

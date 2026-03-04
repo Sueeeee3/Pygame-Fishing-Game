@@ -1,13 +1,15 @@
 import pygame
-#PiL not supported so extracted all the frames into folders and called gifs that way
-#Got rid of numpy and distorted voice thing since its not really supported/ changed the voice locally and saved it as snd_type_2
-#All sounds converted to ogg
-#To every asset added the transform.scale original size and Scaling
+#PIL not supported on web build so GIF frames are pre-extracted into folders and loaded manually
+#Removed numpy and distorted voice effect (Not supported on web); Voice saved locally as snd_type_2
+#All sounds converted to ogg for web compatibility
+#All assets scaled using S() so they respond to resolution change
 
 
 from settings import WIDTH, HEIGHT, SCALE, S
 
-def _load_gif(folder, speed_mult=1.0, target_size=None): #New gif loader
+def _load_gif(folder, speed_mult=1.0, target_size=None): 
+    #Loads pre-extracted GIF frames and their durations from a folder
+    #speed_mult scales all frame durations to speed up or slow down the animation
     frames = []
     with open(f"{folder}/durations.txt") as f:
         durations = [int(x) for x in f.read().splitlines()]
@@ -280,5 +282,6 @@ class Assets:
         t     = max(0.0, min(1.0, elapsed_ms / total_ms))
         index = min(int(t * len(frames)), len(frames) - 1)
         return frames[index][0]
+
 
 

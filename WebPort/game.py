@@ -15,10 +15,10 @@ from inventory import Inventory
 from save_system import SaveSystem
 from fishpedia import Fishpedia
 from cutscene import IntroCutscene, EndingCutscene, should_trigger_ending
-import asyncio #Import async 
+import asyncio #Import async (Needed for the web build ; asyncio.sleep(0) gives back control back to the browser each frame)
 
-#Get rid of os.chdir and mouse speed things
-#Make the hardcoded values scale based on settings scaling function
+#Got rid of os.chdir and mouse speed settings
+#Made the hardcoded values scale based on settings scaling function
 
 
 class Game:
@@ -182,9 +182,9 @@ class Game:
             return self.cutscene.phase != "wait_fishpedia"
         return False
 
-    async def run(self): #Make run async
+    async def run(self): #Required by the web build ; Regular def run() won't work in a browser
         while self.running:
-            dt = min(self.clock.tick(FPS) / 1000, 0.1) #Limit the dt so even when game gets paused and you come back the dt is not huge and doesnt speed things up (Looked really funny tho)
+            dt = min(self.clock.tick(FPS) / 1000, 0.1) #Limit Dt so returning from a pause doesn't cause a time jump (Looked funny tho)
             self.ui.update_mouse_state()
             self.handle_events(dt)
             self.update(dt)
@@ -199,15 +199,15 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
 
-            if event.type == pygame.ACTIVEEVENT: #When visibility/ focus changes 
-                if hasattr(event, "state") and event.state & 2: #2= game in focus
+            if event.type == pygame.ACTIVEEVENT: #Fires when the window gains or loses focus
+                if hasattr(event, "state") and event.state & 2: #Reacts to focus changes 
                     if event.gain == 0:
                         self._minimised = True
                         self.assets.pause_all()
                     else:
                         self._minimised = False
                         self.assets.resume_all()
-                        self.ui.on_focus_gained() #Window just gained focus, start ui timer
+                        self.ui.on_focus_gained() #Window just gained focus, start Ui() timer
 
             if event.type == self.FISH_SPLASH_EVENT and self.state == "game":
                 in_cutscene = self.cutscene and not self.cutscene.done
@@ -217,7 +217,7 @@ class Game:
                 pygame.time.set_timer(self.FISH_SPLASH_EVENT, random.randint(3000, 7000))
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                self.ui.register_click() #Added the ui button function
+                self.ui.register_click() #Added the Ui() button module
                 if self.cutscene and not self.cutscene.done:
                     self.cutscene.handle_click(self)
                 else:
@@ -475,4 +475,6 @@ class Game:
 
         elif self.state == "game":
             self._draw_game_scene(dt_ms)
+
+
 

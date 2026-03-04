@@ -3,6 +3,16 @@ import math
 
 FONT_PATH = "TradeWinds-Regular.ttf"
 
+"""
+Inventory- manages an inventory system with display cards and sell mechanic
+
+Handles:
+-Displaying caugh fish, their size and value
+-Draws inventory overlay
+-Game() passes itself in each call so Inventory can add money directly,
+"""
+
+#Font cache so each size is only loaded once rather than every draw call
 _font_cache = {}
 def tw(size):
     if size not in _font_cache:
@@ -12,44 +22,52 @@ def tw(size):
 
 class Inventory:
     def __init__(self, assets):
+        #Set starting values when Inventory is first created;
         self.assets = assets
-        self.tier = 1
-        self.items = []
-        self.open = False
-        self.scroll = 0
-        self.pending_sell = []
+        self.tier = 1 #Storage tier 
+        self.items = [] #List of things currently in inventory (Starts empty)
+        self.open = False #Starts not open
+        self.scroll = 0 #Vertical scroll offset for the grid (in rows)
+        self.pending_sell = [] #Queued gold income to be applied to Game()
 
         self.tier_config = {
+            #List of dictionaries holding all storage items data
             1: {"capacity": 5,  "empty": assets.c_e, "half": assets.c_h, "full": assets.c_f},
             2: {"capacity": 10, "empty": assets.b_e, "half": assets.b_h, "full": assets.b_f},
             3: {"capacity": 30, "empty": assets.f_e, "half": assets.f_h, "full": assets.f_f},
         }
 
     def get_capacity(self):
+        #Based on storage tier get its capacity; Used for checking if inventory is full
         return self.tier_config[self.tier]["capacity"]
 
     def is_full(self):
+        #Check if the inventory is full 
         return len(self.items) >= self.get_capacity()
 
     def add_fish(self, fish_info):
+        #If idventory is not full add caugh fish into the list as a dictionary
         if not self.is_full():
             self.items.append(fish_info)
             return True
         return False
 
     def sell_fish(self, index):
+        #For each item in inventory above a zero add a sell module that returns the pice * size (For size mult), then remove it from the list
         if 0 <= index < len(self.items):
             fish = self.items.pop(index)
             return int(fish["price"] * fish["size"])
         return 0
 
     def sell_all(self):
+        #Adds a sell all module that sells every fish in the list, clearing it
         total = sum(int(f["price"] * f["size"]) for f in self.items)
         self.items.clear()
-        self.scroll = 0
+        self.scroll = 0 #Resets scroll value when inventory is empty
         return total
 
     def get_bucket_image(self):
+        #Based on storage tier get the matching image in three states (Empty,Half full, Full)
         config = self.tier_config[self.tier]
         count  = len(self.items)
         if count == 0:
@@ -57,6 +75,7 @@ class Inventory:
         return config["full"] if count >= self.get_capacity() else config["half"]
 
     def toggle(self):
+        #Opening/Closing the Inventory overlay
         self.open = not self.open
 
     def handle_input(self, event, fishpedia):
@@ -174,4 +193,5 @@ class Inventory:
             bar_h = panel_h // total_rows
             bar_y = panel_y + self.scroll * bar_h
             pygame.draw.rect(screen, (150, 185, 220), (sb_x, panel_y, 11, panel_h), border_radius=5)
+
             pygame.draw.rect(screen, (60,  100, 160), (sb_x, bar_y,   11, bar_h),   border_radius=5)
