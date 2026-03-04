@@ -28,10 +28,10 @@ class FishingSystem:
         #The same but just with rod tops, used in Rope() class to calculate starting rope point 
         self.rod_top_offsets = [
             pygame.Vector2(127, 366),
-            pygame.Vector2(81,  (371),
-            pygame.Vector2(0,       -371),
-            pygame.Vector2(81,   -371),
-            pygame.Vector2(127,  -366),
+            pygame.Vector2(81,  371),
+            pygame.Vector2(0,  -371),
+            pygame.Vector2(81, -371),
+            pygame.Vector2(127,-366),
         ]
 
         self.rod_pos = pygame.Vector2(960, HEIGHT) #Starting rod position, althought it wont change mich later.
@@ -69,35 +69,37 @@ class FishingSystem:
     def get_top_bound(self): #Get the current rod tier and based on it check the top_bound, by defalut make it the smallest one.
         return self.tier_top_bounds.get(self.shop.rod_tier, 533)
 
-    def get_depth(self):
-        return max(0.0, min(1.0, (S(bottom_bound) - self.bait_pos.y) / (S(bottom_bound) - S(top_bound))))
+    def get_depth(self): #Calculate depth, used in Game() class for rope calculations
+        return max(0.0, min(1.0, (bottom_bound - self.bait_pos.y) / bottom_bound - top_bound)))
 
-    def update(self):
+    def update(self): 
         self._build_rod_states()
         new_bait = self._get_bait_img()
         if new_bait is not self.bait_img:
             self.bait_img = new_bait
             self.scaler = Scale(self.bait_img)
 
-        current_top = self.get_top_bound()
-        mx, my = pygame.mouse.get_pos()
-        target = pygame.Vector2(mx, max(current_top, min(S(bottom_bound), my)))
+        current_top = self.get_top_bound() #Get current rod tier top bound from function
+        mx, my = pygame.mouse.get_pos() #Gettting mouse position every frame
+        target = pygame.Vector2(mx, max(current_top, min(bottom_bound, my))) #Set a target position (A mouse position calculated to stop at the edge of bounds)
 
-        self.bait_vel += (target - self.bait_pos) * self.spring
+        #Physics calculations, just experiment with it untill it feels right, keep the vel as velocity vector, used for later calculating speed
+        self.bait_vel += (target - self.bait_pos) * self.spring 
         self.bait_vel *= self.damping
-        self.bait_pos += self.bait_vel
-        self.bait_pos.y = max(current_top, min(S(bottom_bound), self.bait_pos.y))
+        self.bait_pos += self.bait_vel 
+        self.bait_pos.y = max(current_top, min(bottom_bound, self.bait_pos.y)) #Calculate bait y within bounds 
 
-        self._zone_index = max(0, min(4, int(self.bait_pos.x // S(384))))
-        self.rod_img = self.rod_states[self._zone_index]
-        self.rod_pos.x = S(960)
-        self.rod_pos.y = HEIGHT
-        self.rod_top = self.rod_pos + self.rod_top_offsets[self._zone_index]
-        self.speed = self.bait_vel.length()
+        self._zone_index = max(0, min(4, int(self.bait_pos.x // 384))) #Calculate zone indexes for rod orientation 384 is just 1920/5 so you have 5 even zones
+        self.rod_img = self.rod_states[self._zone_index] #Choose rod image with correct orientation for each zone the mouse is in
+        self.rod_pos.x = 960 #Rod x is hardcoded, center of screen
+        self.rod_pos.y = HEIGHT #Rod y is hardcoded, at the bottom of the screen
+        self.rod_top = self.rod_pos + self.rod_top_offsets[self._zone_index] #Get rod_top value for rope, calcualted on offset of current rod orientation (zone)
+        self.speed = self.bait_vel.length() #Get speed value by calculating the lenght of velocity vector, used to check if player approch speed is too great (Scare off mechanic, more about it in Game() and Splash() class)
 
     def draw(self, screen):
-        scale = 0.5 + 0.5 * ((self.bait_pos.y - S(top_bound)) / (S(bottom_bound) - S(top_bound))) * 2
-        scaled_bait = self.scaler.get_scaled(scale)
-        screen.blit(self.rod_img, self.rod_pos - self.rod_handle_offsets[self._zone_index])
-        screen.blit(scaled_bait, scaled_bait.get_rect(center=self.bait_pos))
+        scale = 0.5 + 0.5 * ((self.bait_pos.y - (((top_bound / bottom_bound) - top_bound)) * 2 #Based on bait y calculate the scale (depth) of current bait pos
+        scaled_bait = self.scaler.get_scaled(scale) #Scale the current bait image based on scale(depth) using Scale() class
+        screen.blit(self.rod_img, self.rod_pos - self.rod_handle_offsets[self._zone_index]) #Draw the current rod img , using the hardcoded position value- zone index offset 
+        screen.blit(scaled_bait, scaled_bait.get_rect(center=self.bait_pos)) #Draw the current bait image , its position being the surface based on the centre of current bait pos
+
 
