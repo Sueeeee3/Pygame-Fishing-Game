@@ -1,0 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap');
+
+body,
+.main.wrapper {
+  background-image: url("https://img.itch.zone/aW1nLzI1OTc2NTM1LmdpZg==/original/ShDRJL.gif") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+body::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: repeating-linear-gradient(
+    105deg,
+    transparent 0%,        transparent 8%,
+    rgba(180,240,230,.12)  9%,
+    transparent 10%,       transparent 18%,
+    rgba(180,240,230,.08)  19%,
+    transparent 20%
+  ) !important;
+  animation: rays 8s ease-in-out infinite alternate !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+@keyframes rays {
+  from { opacity: 0.4; transform: skewX(-2deg) translateX(-3%); }
+  to   { opacity: 1;   transform: skewX(2deg)  translateX(3%); }
+}
+
+.game_frame,
+.html_embed_widget,
+.view_html_game_page {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+.embed_wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#inner_column {
+  position: relative !important;
+  background: none !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  border-radius: 8px !important;
+}
+
+#inner_column::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(27, 92, 92,.75) !important;
+  z-index: -2 !important;
+  pointer-events: none !important;
+}
+
+#inner_column::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 45px !important;
+  height: 45px !important;
+  left: 40% !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 30% 30%, rgba(150,230,220,.5), rgba(100,200,190,.05)) !important;
+  border: 1px solid rgba(150,230,220,.5) !important;
+  animation: bubblerise 10s ease-in-out infinite !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+@keyframes bubblerise {
+  0%   { top: 95%;   opacity: 0;   transform: translateX(0px); }
+  15%  { opacity: .7;              transform: translateX(12px); }
+  40%  {                           transform: translateX(-10px); }
+  65%  { opacity: .4;              transform: translateX(14px); }
+  85%  {                           transform: translateX(-8px); }
+  100% { top: -10%;  opacity: 0;   transform: translateX(4px); }
+}
+
+#inner_column > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.game_title h1 {
+  font-size: 0 !important;
+  background: url("https://files.catbox.moe/gmmnpl.png") center / contain no-repeat !important;
+  display: block !important;
+  width: 100% !important;
+  height: 130px !important;
+}
+
+.donate {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-top: 0 !important;
+  background: none !important;
+}
+
+.donate .donate_btn,
+.buttons button {
+  background: url("https://i.ibb.co/GvsFHYPN/gui22.png") no-repeat !important;
+  background-size: 100% 100% !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: #fff !important;
+  font-family: 'Trade Winds', cursive !important;
+  font-weight: normal !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.8) !important;
+  line-height: normal !important;
+  height: auto !important;
+  transition: background-image .2s !important;
+  cursor: pointer !important;
+}
+
+.donate .donate_btn:hover,
+.buttons button:hover {
+  background-image: url("https://i.ibb.co/TVnd4MK/button-hover.png") !important;
+}
+
+.donate .donate_btn {
+  font-size: 1.1em !important;
+  padding: 18px 40px !important;
+}
+
+.buttons {
+  margin: 8px 0 40px !important;
+}
+
+.buttons button {
+  font-size: .85em !important;
+  padding: 14px 32px !important;
+}
+
+.more_information_toggle .toggle_row {
+  display: flex !important;
+  justify-content: start !important;
+}
+
+.toggle_info_btn {
+  background: none !important;
+  border: none !important;
+  color: rgba(200,240,235,.85) !important;
+  font-size: .9em !important;
+  font-weight: normal !important;
+  text-decoration: underline !important;
+  padding: 4px 0 !important;
+  cursor: pointer !important;
+  display: inline !important;
+  box-shadow: none !important;
+}
+
+.toggle_info_btn:hover { color: #fff !important; }
+.toggle_info_btn svg   { display: none !important; }
+
+.game_comments_widget h2,
+#download {
+  background: url("https://i.ibb.co/GvsFHYPN/gui22.png") no-repeat !important;
+  background-size: 100% 100% !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  font-family: 'Trade Winds', cursive !important;
+  font-size: 2.2em !important;
+  font-weight: normal !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.8) !important;
+  padding: 22px 60px !important;
+  display: inline-block !important;
+  width: fit-content !important;
+  margin-bottom: 8px !important;
+}
+
+.redactor-box,
+.community_post_widget {
+  position: relative !important;
+  background: none !important;
+  border: none !important;
+  width: 90% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+}
+
+.community_post_widget { margin-bottom: 80px !important; }
+
+.redactor-box::before,
+.post_grid::before {
+  content: "" !important;
+  display: block !important;
+  width: 100% !important;
+  height: 51px !important;
+  background: url("https://i.ibb.co/ccJZj9gk/top.png") no-repeat center bottom / 100% auto !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.post_grid::before {
+  position: absolute !important;
+  top: -51px !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.post_grid::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -43px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 43px !important;
+  background: url("https://i.ibb.co/VYC67j9t/bottom.png") no-repeat center top / 100% auto !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.redactor-layer,
+.post_grid {
+  position: relative !important;
+  background: url("https://i.ibb.co/p68FSr52/mid.png") repeat-y top / 100% 106px !important;
+  background-color: transparent !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 5px 16px !important;
+  z-index: 1 !important;
+}
+
+.redactor-layer {
+  padding: 8px 16px !important;
+  min-height: 80px !important;
+}
+
+.post_grid {
+  margin-top: 51px !important;
+  margin-bottom: 43px !important;
+}
+
+.redactor-layer p { color: #fff !important; margin: 0 !important; padding: 0 !important; }
+
+.redactor-toolbar-box,
+.redactor-toolbar {
+  background: rgba(30,80,80,.8) !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.re-button       { color: #fff !important; }
+.re-button:hover { background: rgba(150,230,220,.2) !important; }
+
+.post_body,
+.post_body p,
+.post_author a,
+.post_date a,
+.post_action {
+  color: #fff !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.8) !important;
+}
+
+.post_action:hover { color: #fff !important; }
+
+.vote_btn {
+  color: #fff !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.click_input {
+  background: url("https://i.ibb.co/vvCy6N08/gui.png") no-repeat !important;
+  background-size: 100% 100% !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.8) !important;
+  padding: 20px 40px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  cursor: text !important;
+}
+
+.click_input::placeholder { color: rgba(255,255,255,.8) !important; }
+
+.buy_btn {
+  background: #1E5252 !important;
+  color: #fff !important;
+  border: 2px solid rgba(255,255,255,.3) !important;
+  font-size: 1.1em !important;
+  font-weight: bold !important;
+  padding: 20px 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: filter .15s !important;
+}
+
+.buy_btn:hover { filter: brightness(1.2) !important; }
+
+.button_message {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.upload_name {
+  color: #ffffff !important;
+  font-family: 'Trade Winds', cursive !important;
+  font-size: 0.85em !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important;
+}
+
+.upload_name .name {
+  color: #ffffff !important;
+}
+
+.file_size span,
+.icon-windows8 { color: rgba(200,240,235,.85) !important; }
+
+.game_download p {
+  color: rgba(200,240,235,.85) !important;
+  font-family: 'Trade Winds', cursive !important;
+  font-size: .85em !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.8) !important;
+}
