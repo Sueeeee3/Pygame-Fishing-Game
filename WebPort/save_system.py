@@ -118,7 +118,7 @@ class SaveSystem:
         game.fishpedia.caught_fish      = {}
         game.seen_events                = set()
         game.cutscene                   = None
-        game.special_splash_a
+        game.special_splash_active      = False
 
     def has_save(self): #Added web support
             if WEB:

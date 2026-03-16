@@ -515,7 +515,7 @@ class EndingCutscene(Cutscene):
             "A bad game about fish.",
             "And questionable life choices of me and the main character.",
             "",
-            "-Yours trurly, Sue",
+            "-Yours truly, Sue",
             "Thanks for playing <3",
             "",
             "",
