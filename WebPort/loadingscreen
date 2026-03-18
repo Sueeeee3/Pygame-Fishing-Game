@@ -1,0 +1,465 @@
+<html lang="en-us"><script src="{{cookiecutter.cdn}}pythons.js" type=module id=site data-LINES=57 data-CONSOLE=25 data-python=python{{cookiecutter.PYBUILD}} data-os=vtx,fs,snd,gui async defer>#<!--
+
+print("""
+Loading web from web.apk
+    Pygbag Version : 0.9.2
+    Template Version : 0.9.0
+    Python  : {{cookiecutter.PYBUILD}}
+    CDN URL : {{cookiecutter.cdn}}
+    Screen  : {{cookiecutter.width}}x{{cookiecutter.height}}
+    Title   : {{cookiecutter.title}}
+    Folder  : {{cookiecutter.directory}}
+    Authors : {{cookiecutter.authors}}
+    SPDX-License-Identifier: {{cookiecutter.spdx}}
+
+""")
+
+# screen pixels (real, hardware)
+WIDTH=1024  # {{cookiecutter.width}}
+HEIGHT=600  # {{cookiecutter.height}}
+
+# reference/idealized screen pixels
+REFX = 1980
+REFY = 1080
+
+def u(real, ref, v):
+    if abs(v)<0.9999999:
+        result = int( (float(real)/100.0) * (v*1000))
+        if v<0:
+            return real-result
+        return result
+    return int( (real/ref) * v )
+
+def ux(*argv):
+    global WIDTH, REFX
+    acc = 0
+    for v in argv:
+        acc += u(WIDTH, REFX, v)
+    return acc
+
+def uy(*argv):
+    global HEIGHT, REFY
+    acc = 0
+    for v in argv:
+        acc += u(HEIGHT, REFY, v)
+    return acc
+
+# do not rename
+async def custom_site():
+
+    import sys
+    import asyncio
+    import platform
+    import json
+    from pathlib import Path
+
+    import embed
+
+    platform.document.body.style.background = "#008f89"
+
+    import pygame
+
+    def compose():
+        pygame.display.update()
+        window.chromakey(None, *screen.get_colorkey(), 40)
+
+    pygame.init()
+    pygame.font.init()
+
+    screen = pygame.display.set_mode([ux(.100),uy(.100)], pygame.SRCALPHA, 32)
+    screen.set_colorkey( (0,0,0,0), pygame.RLEACCEL )
+    screen.fill( (0,0,0,0) )
+
+    compose()
+
+    platform.window.transfer.hidden = true
+    platform.window.canvas.style.visibility = "visible"
+
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
+ 
+    # the C or js loader could do that but be explicit.
+    appdir = Path(f"/data/data/{bundle}")
+    appdir.mkdir()
+     
+
+    # mount apk
+    cfg = {
+        "io": "url",
+        "type":"mount",
+        "mount" : {
+            "point" : appdir.as_posix(),
+            "path" : "/",
+        },
+        "path" : f"/ => {appdir.as_posix()}",
+    }
+
+    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+
+    def pg_bar(pos):
+        total = track.len or 10
+        pct = int((pos / total) * 100)
+        platform.window.document.getElementById('ocean-fill').style.width = f"{pct}%"
+        platform.window.document.getElementById('bar-fish').style.left = f"{pct}%"
+        if pct >= 100:
+            platform.window._hideOceanLoader()
+
+    # wait until zip mount + overlayfs is complete
+    while not track.ready:
+        pg_bar(track.pos)
+        compose()
+        await asyncio.sleep(.1)
+
+    # fill it up in case it was cached and instant download
+    pg_bar(track.len)
+    compose()
+
+    # preloader will change dir and prepend it to sys.path
+    platform.run_main(PyConfig, loaderhome= appdir / "assets", loadermain=None)
+
+    # wait preloading complete
+    while embed.counter()<0:
+        await asyncio.sleep(.1)
+
+    main = appdir / "assets" / "main.py"
+
+    # start async top level machinery
+    await TopLevel_async_handler.start_toplevel(platform.shell, console=window.python.config.debug)
+
+    __import__(__name__).__file__ = str(main)
+
+    # ui_callback for package install progress
+    def ui_callback(pkg, error=None):
+        pass  
+    await shell.runpy(main, callback=ui_callback)
+
+import asyncio
+asyncio.run( custom_site() )
+
+# BEGIN BLOCK
+#
+# now this is the html part you can (and should) customize
+# do not alter that comment block it is separating python code from html code
+# =============================================================================
+# --></script><head><!--
+//=============================================================================
+-->
+
+<script type="application/javascript">
+config = {
+    xtermjs : "1",
+    _sdl2 : "canvas",
+    user_canvas : 0,
+    user_canvas_managed : 0,
+    ume_block : {{cookiecutter.ume_block}},
+    can_close : {{cookiecutter.can_close}},
+    archive : "{{cookiecutter.archive}}",
+    gui_debug : 3,
+    cdn : "{{cookiecutter.cdn}}",
+    autorun : {{cookiecutter.autorun}},
+    PYBUILD : "{{cookiecutter.PYBUILD}}"
+}
+</script>
+
+    <title>{{cookiecutter.title}}</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+    <link rel="prefetch" href="{{cookiecutter.cdn}}pythonrc.py">
+    <link rel="prefetch" href="{{cookiecutter.cdn}}vt/xterm.js">
+    <link rel="prefetch" href="{{cookiecutter.cdn}}vt/xterm-addon-image.js">
+
+    <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
+
+    <script src="{{cookiecutter.cdn}}browserfs.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: arial;
+            margin: 0;
+            padding: 0;
+            background: #008f89;
+        }
+
+        /* ── Canvas — pygame-web owns this ── */
+        canvas.emscripten {
+            border: 0px none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            padding: 0;
+            margin: 0 auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+
+        #transfer {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0; padding: 0;
+            background: linear-gradient(180deg,
+                #007a74 0%,
+                #008f89 25%,
+                #009e97 50%,
+                #008f89 75%,
+                #007a74 100%);
+            animation: oceanPulse 7s ease-in-out infinite alternate;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        #transfer.ocean-hidden {
+            opacity: 0;
+        }
+
+        /* Hide default pygbag children — kept in DOM so pygbag doesn't crash */
+        #status, #progress { display: none !important; }
+
+        @keyframes oceanPulse {
+            0%   { filter: brightness(0.82); }
+            50%  { filter: brightness(1.08); }
+            100% { filter: brightness(0.88); }
+        }
+
+        /* Progress track */
+        .ocean-track {
+            width: 480px;
+            height: 32px;
+            background: rgba(160, 230, 225, 0.35);
+            border-radius: 16px;
+            border: 2px solid rgba(180, 240, 235, 0.55);
+            overflow: visible;
+            position: relative;
+        }
+        .ocean-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #007a74, #00b5ad);
+            border-radius: 16px;
+            transition: width 0.15s linear;
+        }
+
+        /* Fish riding the bar */
+        #bar-fish {
+            position: absolute;
+            top: -48px;
+            left: 0%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 10px rgba(0,0,0,0.5));
+            pointer-events: none;
+            transition: left 0.15s linear;
+        }
+
+        /* Bubbles */
+        .ocean-bubbles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 19;
+        }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 32% 30%,
+                rgba(180,240,235,0.5),
+                rgba(120,210,205,0.04));
+            border: 1px solid rgba(160,235,225,0.5);
+            opacity: 0;
+            animation: bubbleRise var(--dur) ease-in-out var(--delay) infinite;
+        }
+        @keyframes bubbleRise {
+            0%   { bottom: -6%;  opacity: 0;    transform: translateX(0); }
+            8%   {               opacity: 0.7; }
+            35%  {                              transform: translateX(var(--sway1)); }
+            60%  {               opacity: 0.45; transform: translateX(var(--sway2)); }
+            85%  {               opacity: 0.25; transform: translateX(var(--sway1)); }
+            100% { bottom: 108%; opacity: 0;    transform: translateX(var(--sway2)); }
+        }
+
+        /* Misc layout helpers */
+        div.emscripten        { text-align: center; }
+        div.emscripten_border { border: 1px solid black; }
+        div.thick_border      { border: 4px solid black; }
+
+        .topright    { position: absolute; top: 0;   right: 0; }
+        .bottomright { position: absolute; top: 40%; right: 0; }
+        .center      { display: flex; align-items: center; justify-content: center; }
+
+        .trinfo {
+            position: relative;
+            right: 0px;
+            border: 1px solid black;
+        }
+        .framed {
+            position: relative;
+            top: 150px;
+            right: 10px;
+            border: 1px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+
+   
+    <div id="transfer">
+        <div class="ocean-bubbles" id="bubble-container"></div>
+        <div class="ocean-track">
+            <div id="ocean-fill" class="ocean-fill"></div>
+            <img id="bar-fish" src="fishcracer.png" onerror="this.style.display='none'">
+        </div>
+        
+        <div class="emscripten" id="status">Downloading...</div>
+        <div class="emscripten">
+            <progress value="0" max="100" id="progress"></progress>
+        </div>
+    </div>
+
+   
+    <canvas class="emscripten" id="canvas"
+        width="1px"
+        height="1px"
+        oncontextmenu="event.preventDefault()"
+        tabindex=1>
+    </canvas>
+
+    <div id="html"></div>
+
+    <div id="crt" class="bottomright">
+        <div id="system" hidden>
+            <div class="button-container">
+                <button id="aiostop"                 disabled>AIO ⏏︎</button>
+                <button id="aiopaused_true"           disabled>AIO ■</button>
+                <button id="aiopaused_false"          disabled>AIO ▶</button>
+                <button id="pygame_mixer_music_pause" disabled>Music ■</button>
+            </div>
+            <div class="button-container">
+                <div id="load_min">min</div>
+                <div id="load_avg">avg</div>
+                <div id="load_max">max</div>
+                <button id="load_rst" disabled>RESET</button>
+            </div>
+            <div id="level">(battery level unknown)</div>
+            <div id="stateBattery">(charging state unknown)</div>
+        </div>
+
+        <div id="box" class="emscripten_border" hidden=true>
+            <div id="info" class="trinfo"></div>
+            <iframe id="iframe" class="framed" name="iframe"
+                width="470px" height="90%"
+                allowtransparency="true"
+                style="z-index: 10; background: #000000;"
+                frameborder="1"
+                allowfullscreen="true" webkitallowfullscreen="true"
+                msallowfullscreen="true" mozallowfullscreen="true"
+                sandbox="allow-same-origin allow-top-navigation allow-scripts allow-pointer-lock"
+                allow="autoplay; fullscreen *; geolocation; microphone; camera; midi; monetization; xr-spatial-tracking; gamepad; gyroscope; accelerometer; xr; cross-origin-isolated"
+                src="{{cookiecutter.cdn}}empty.html"
+                scrolling="yes">
+            </iframe>
+        </div>
+    </div>
+
+    <div id="dlg" hidden>
+        <input type="file" id="dlg_multifile" multiple accept="image/*">
+        <label for="dlg_multifile">Select files</label>
+    </div>
+
+    <div id="pyconsole">
+        <div id="terminal" tabIndex=1 align="left"></div>
+    </div>
+
+    <script type="application/javascript">
+
+        /* ══ Spawn bubbles ══ */
+        (function () {
+            var c = document.getElementById('bubble-container');
+            for (var i = 0; i < 25; i++) {
+                var b  = document.createElement('div');
+                b.className = 'bubble';
+                var sz = (Math.random() * 15 + 5) + 'px';
+                b.style.width  = sz;
+                b.style.height = sz;
+                b.style.left   = (Math.random() * 100) + '%';
+                b.style.setProperty('--dur',   (Math.random() * 8  + 5)  + 's');
+                b.style.setProperty('--delay', '-' + (Math.random() * 10) + 's');
+                b.style.setProperty('--sway1', (Math.random() * 40 - 20)  + 'px');
+                b.style.setProperty('--sway2', (Math.random() * 40 - 20)  + 'px');
+                c.appendChild(b);
+            }
+        })();
+
+        /* ══ Hide ocean loader when pygame-web is ready ══ */
+        function _hideOceanLoader() {
+            var fill = document.getElementById('ocean-fill');
+            var fish = document.getElementById('bar-fish');
+            if (fill) fill.style.width = '100%';
+            if (fish) fish.style.left  = '100%';
+
+            var tr = document.getElementById('transfer');
+            if (!tr) return;
+            setTimeout(function () {
+                tr.classList.add('ocean-hidden');
+                setTimeout(function () { tr.style.display = 'none'; }, 1100);
+            }, 400);
+        }
+
+        /* ══ pygame-web lifecycle hooks ══ */
+        async function custom_onload(debug_hidden) {
+            console.log(__FILE__, "custom_onload");
+            // Do NOT hide the ocean loader here — pygbag calls this before
+            // the APK download finishes. pg_bar() handles hiding at 100%.
+            pyconsole.hidden = debug_hidden;
+            system.hidden    = debug_hidden;
+            info.hidden      = debug_hidden;
+            box.hidden       = debug_hidden;
+            var cv = document.getElementById('canvas');
+            if (cv && typeof cv.focus === 'function') cv.focus();
+        }
+
+        function custom_prerun() {
+            console.log(__FILE__, "custom_prerun");
+        }
+
+        function custom_postrun() {
+            console.log(__FILE__, "custom_postrun");
+            window.addEventListener("keydown", function (e) {
+                if (["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                    if (!python.config.debug)
+                        e.preventDefault();
+                }
+            }, false);
+        }
+
+        function debug() {
+            python.config.debug = true;
+            custom_onload(false);
+            Module.PyRun_SimpleString("shell.uptime()");
+            window_resize();
+        }
+
+        function info_inline(data) { document.getElementById("info").innerHTML = data; }
+        function info_online(url)  {
+            fetch(url).then(r => r.text()).then(h => { info_inline(h); }).catch(e => { console.warn(e); });
+        }
+        function frame_online(url) { window.frames["iframe"].location = url; }
+
+    </script>
+
+</body>
+</html>
