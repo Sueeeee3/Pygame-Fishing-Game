@@ -13,5 +13,3 @@ async def main():
 asyncio.run(main()) #Calls async main() function; Creates event loop
 
 
-
-#py -m pygbag main.py <- from "Your game" folder <-- CMD WAY TO BUILD AND RUN FOR TESTING
